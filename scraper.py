@@ -25,26 +25,30 @@ def main():
 	payload = {
 		'entity_id': 1,
 		'entity_type': 'city',
-		'category': category,
-		'start': start,
-		'count': count
+		'category': category
 	}
 
 	headers = {'user-key': 'b79e96869e3f14a2e2a4e8b65595ce60'}	
 
 	results = requests.get('https://developers.zomato.com/api/v2.1/search', params=payload, headers=headers).json()['results_found']
-	iters = int(results / 20) + 1
+	iters = int(results / 20)
 
-	for i in range(iters):
-		payload['category'] = category
-		payload['start'] = (iters*20)
-		payload['count'] = 20
+	with open('{}.json'.format(categories[category]), mode='w') as f:
+		for i in range(iters):
+			payload['start'] = (iters*20)
+			payload['count'] = 20
 
-		response = requests.get('https://developers.zomato.com/api/v2.1/search', params=payload, headers=headers).json()
-		restaurants = restaurants + response['restaurants']
-		with open('{}.json'.format(categories[category]), mode='w') as f:
-			json.dump(restaurants, f)
+			try:
+				response = requests.get('https://developers.zomato.com/api/v2.1/search', params=payload, headers=headers).json()
+				restaurants = restaurants + response['restaurants']
+			except:
+				json.dump(restaurants, f)
+				raise
+			else:
+				continue
+				
+		json.dump(restaurants, f)
+
 
 if __name__=='__main__':
 	main()
-	
