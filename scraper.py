@@ -1,10 +1,27 @@
 import requests
+import json
 
 
-def scrape():
+def main():
 	restaurants = []
 
-	category = 2
+	category = 14
+	categories = {
+		1: 'Delivery',
+		2: 'Dine-out',
+		3: 'Nightlife',
+		4: 'Catching-up',
+		5: 'Takeaway',
+		6: 'Cafes',
+		7: 'Daily Menus',
+		8: 'Breakfast',
+		9: 'Lunch',
+		10: 'Dinner',
+		11: 'Pubs and Bars',
+		13: 'Pocket Friendly Delivery',
+		14: 'Clubs and Lounges'
+	}
+	
 	payload = {
 		'entity_id': 1,
 		'entity_type': 'city',
@@ -25,3 +42,9 @@ def scrape():
 
 		response = requests.get('https://developers.zomato.com/api/v2.1/search', params=payload, headers=headers).json()
 		restaurants = restaurants + response['restaurants']
+		with open('{}.json'.format(categories[category]), mode='w') as f:
+			json.dump(restaurants, f)
+
+if __name__=='__main__':
+	main()
+	
